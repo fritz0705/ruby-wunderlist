@@ -5,8 +5,8 @@ API. It supports at the moment read-only access, but it works. :)
 
 h2. Dependencies
 
-* json:http://rubygems.org/gems/json
-* nokogiri:http://rubygems.org/gems/nokogiri
+* "json":http://rubygems.org/gems/json
+* "nokogiri":http://rubygems.org/gems/nokogiri
 
 h2. Example
 
