@@ -34,7 +34,7 @@ module Wunderlist
       api.tasks(self)[offset]
     end
 
-    def to_ary
+    def to_a
       api.tasks self
     end
 

@@ -22,5 +22,5 @@ h2. Example
   
   # Get all tasks in the first list
   # (It's a little bit complicated because lists is a Hash)
-  tasks = lists.to_ary.first[1].to_ary.first
+  tasks = lists.to_a.first[1].to_a.first
 </pre>
