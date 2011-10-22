@@ -23,7 +23,6 @@
 
 require "net/http"
 require "digest/md5"
-require "psych"
 require "json"
 require "nokogiri"
 require "date"
@@ -59,7 +58,7 @@ module Wunderlist
       response = @http.request request
       result = {}
       
-      Psych.load(response.body)["data"].each do |list_elem|
+      JSON.parse(response.body)["data"].each do |list_elem|
         list = Wunderlist::List.new
         list.id = list_elem[0].to_i
         list.name = list_elem[1]["name"]
