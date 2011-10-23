@@ -129,6 +129,22 @@ module Wunderlist
       false
     end
 
+    def destroy_task(obj)
+      json_data = {"list_id" => obj.list_id, "name" => obj.name, "deleted" => 1}
+
+      request = prepare_request(Net::NTTP::Post.new "#{@path}/ajax/tasks/update")
+      request.set_form_data "task" => json_data
+      response = @http.request request
+      response_json = JSON.parse(response.body)
+
+      if response_json["status"] == "success"
+        obj.id = nil
+        return obj
+      end
+
+      false
+    end
+
     def save_task(obj)
       return update_task(obj) if obj.id
 
