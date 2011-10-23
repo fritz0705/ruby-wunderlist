@@ -41,6 +41,11 @@ module Wunderlist
       @api.save(self)
     end
 
+    def destroy(api = nil)
+      @api ||= api
+      @api.destroy(self)
+    end
+
     def flush
       @tasks = nil
     end

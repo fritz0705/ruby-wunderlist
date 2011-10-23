@@ -101,7 +101,30 @@ module Wunderlist
       end
     end
 
+    def destroy(obj)
+      if obj.is_a? Wunderlist::List
+        return destroy_list obj
+      elsif obj.is_a? Wunderlist::Task
+        return destroy_task obj
+      end
+    end
+
     protected
+    def destroy_list(obj)
+      json_data = { "id" => obj.id, "deleted" => 1 }
+      request = prepare_request(Net::HTTP::Post.new "#{@path}/ajax/lists/update")
+      request.set_form_data "list" => json_data.to_json
+      response = @http.request request
+      response_json = JSON.parse(response.body)
+
+      if response_json["status"] == "success"
+        obj.id = nil
+        return obj
+      end
+
+      false
+    end
+
     def save_list(obj)
       return update_list(obj) if obj.id
 
