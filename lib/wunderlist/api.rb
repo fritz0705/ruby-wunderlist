@@ -149,6 +149,26 @@ module Wunderlist
       nil
     end
 
+    def update_task(obj)
+      json_data = {}
+      json_data["id"] = obj.id
+      json_data["important"] = obj.important ? 1 : 0
+      json_data["done"] = obj.done ? 1 : 0
+      json_data["name"] = obj.name
+      json_data["date"] = obj.date ? obj.date.to_time.to_i.to_s : "0"
+
+      request = prepare_request(Net::HTTP::Post.new "#{@path}/ajax/tasks/update")
+      request.set_form_data "task" => json_data.to_json
+      response = @http.request request
+      response_json = JSON.parse response.body
+
+      if response_json["status"] == "success"
+        return obj
+      end
+
+      nil
+    end
+
     def save_list(obj)
       return update_list(obj) if obj.id
 
