@@ -29,13 +29,10 @@ module Wunderlist
       @name = name
       @inbox = inbox
     end
-
-    def [](offset)
-      api.tasks(self)[offset]
-    end
-
-    def to_a
-      api.tasks self
+    
+    def tasks
+      @tasks = @api.tasks self if @tasks == nil
+      @tasks
     end
 
     def save(api = nil)
@@ -43,8 +40,8 @@ module Wunderlist
       @api.save_list(self)
     end
 
-    def reload(api = nil)
-      @api ||= api
+    def flush
+      @tasks = nil
     end
   end
 end

@@ -24,12 +24,13 @@
 require "wunderlist/list"
 
 class Wunderlist::Task
-  attr_accessor :id, :name, :important, :done, :date, :api
+  attr_accessor :id, :name, :important, :done, :date, :api, :list
 
-  def initialize(name = nil, date = nil, api = nil)
+  def initialize(name = nil, date = nil, list = nil, api = nil)
     @name = name
     @date = date
     @api = api
+    @list = list
   end
 
   def save(api = nil)

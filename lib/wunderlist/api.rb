@@ -38,41 +38,33 @@ module Wunderlist
       @domain = domain
       @path = path
       @http = Net::HTTP.new(@domain)
+      @logged_in = false
     end
 
     def login(email, password)
       get_session if @session == nil
+      return true if @logged_in
       @email = email
-
-      req = prepare_request(Net::HTTP::Post.new "#{@path}/account")
-      req.set_form_data({ "email" => @email, "password" => password })
-      @http.request req
 
       req = prepare_request(Net::HTTP::Post.new "#{@path}/ajax/user")
       req.set_form_data({ "email" => @email, "password" => Digest::MD5.hexdigest(password) })
-      @http.request req
+      res = JSON.parse(@http.request(req).body)
+
+      @logged_in = true if res["code"] == 200
+      @logged_in
+    end
+
+    def flush
+      @lists = nil
     end
 
     def lists
-      request = prepare_request(Net::HTTP::Get.new "#{@path}/ajax/lists/all")
-      response = @http.request request
-      result = {}
-      
-      JSON.parse(response.body)["data"].each do |list_elem|
-        list = Wunderlist::List.new
-        list.id = list_elem[0].to_i
-        list.name = list_elem[1]["name"]
-        list.inbox = list_elem[1]["inbox"] == "1" ? true : false
-        list.shared = list_elem[1]["shared"] == "1" ? true : false
-        list.api = self
-
-        result[list.id] = list
-      end
-
-      result
+      @lists = load_lists if @lists == nil
+      @lists
     end
 
     def tasks(list)
+      list_obj = list.is_a?(Wunderlist::List) ? list : lists[list]
       list = list.id if list.is_a? Wunderlist::List
 
       request = prepare_request(Net::HTTP::Get.new "#{@path}/ajax/lists/id/#{list}")
@@ -89,6 +81,7 @@ module Wunderlist
         task.date = Time.at(html_timestamp.first.attributes["rel"].
         value.to_i).to_date unless html_timestamp.empty?
         task.api = self
+        task.list = list_obj
 
         result << task
       end
@@ -96,10 +89,53 @@ module Wunderlist
       result
     end
 
+    def save(obj)
+      if obj.is_a? Wunderlist::List
+        return save_list obj
+      elsif obj.is_a? Wunderlist::Task
+        return save_task obj
+      end
+    end
+
+    def save_list(obj)
+      json_data = {}
+      json_data["id"] = obj.id
+      json_data["name"] = obj.name
+
+      request = prepare_request(Net::HTTP::Post.new "#{@path}/ajax/lists/update")
+      request.set_form_data "list" => json_data.to_json
+      response = @http.request request
+
+      if JSON.parse(response.body)["status"] == "success"
+        return true
+      end
+
+      return false
+    end
+
     protected
     def get_session
       res = @http.request_get("#{@path}/account")
       @session = res["Set-Cookie"].match(/WLSESSID=([0-9a-zA-Z]+)/)[1]
+    end
+
+    def load_lists
+      request = prepare_request(Net::HTTP::Get.new "#{@path}/ajax/lists/all")
+      response = @http.request request
+      result = {}
+      
+      JSON.parse(response.body)["data"].each do |list_elem|
+        list = Wunderlist::List.new
+        list.id = list_elem[0].to_i
+        list.name = list_elem[1]["name"]
+        list.inbox = list_elem[1]["inbox"] == "1" ? true : false
+        list.shared = list_elem[1]["shared"] == "1" ? true : false
+        list.api = self
+
+        result[list.id] = list
+      end
+
+      result
     end
 
     def prepare_request(req)

@@ -1,7 +1,10 @@
 h1. ruby-wunderlist
 
-ruby-wunderlist is an inofficial Ruby binding for the undocumented Wunderlist
-API. It supports at the moment read-only access, but it works. :)
+ruby-wunderlist is an inofficial Ruby binding for the undocumented Wunderlist API.
+
+Features:
+  - Change list names
+  - Get all tasks of a list
 
 h2. Dependencies
 
@@ -14,13 +17,21 @@ h2. Example
   require "wunderlist"
   api = Wunderlist::API.new
   
-  # Login to Wunderlist
+  # Login to Wunderlist (Returns true if successful)
   api.login "johndoe@example.org", "mypassword"
   
   # Get all lists of John Doe
   lists = api.lists
   
-  # Get all tasks in the first list
-  # (It's a little bit complicated because lists is a Hash)
-  tasks = lists.to_a.first[1].to_a.first
+  # Get the first list (This should be Inbox)
+  list = lists.to_a.first[1]
+
+  # Get all tasks of the first list
+  tasks = list.tasks
+  
+  # Rename list
+  list.name = "Something like Inbox"
+
+  # Save list
+  list.save
 </pre>
