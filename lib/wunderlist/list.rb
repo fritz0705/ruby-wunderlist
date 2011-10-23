@@ -40,6 +40,12 @@ module Wunderlist
       Wunderlist::Task.new(name, date, self, @api).save
     end
 
+    def today
+      tasks.clone.keep_if do |t|
+        t.date == Date.today
+      end
+    end
+
     def save(api = nil)
       @api ||= api
       @api.save(self)
