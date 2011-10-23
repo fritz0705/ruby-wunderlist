@@ -89,6 +89,10 @@ module Wunderlist
       result
     end
 
+    def create_list(name)
+      Wunderlist::List.new(name, false, self).save
+    end
+
     def save(obj)
       if obj.is_a? Wunderlist::List
         return save_list obj
@@ -97,7 +101,25 @@ module Wunderlist
       end
     end
 
+    protected
     def save_list(obj)
+      return update_list(obj) if obj.id
+
+      json_data = {"name" => obj.name}
+      request = prepare_request(Net::HTTP::Post.new "#{@path}/ajax/lists/insert")
+      request.set_form_data "list" => json_data.to_json
+      response = @http.request request
+      response_json = JSON.parse(response.body)
+
+      if response_json["status"] == "success"
+        obj.id = response_json["id"]
+        return obj
+      end
+
+      nil
+    end
+
+    def update_list(obj)
       json_data = {}
       json_data["id"] = obj.id
       json_data["name"] = obj.name
@@ -107,13 +129,12 @@ module Wunderlist
       response = @http.request request
 
       if JSON.parse(response.body)["status"] == "success"
-        return true
+        return obj
       end
 
-      return false
+      nil
     end
 
-    protected
     def get_session
       res = @http.request_get("#{@path}/account")
       @session = res["Set-Cookie"].match(/WLSESSID=([0-9a-zA-Z]+)/)[1]

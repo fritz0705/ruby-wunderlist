@@ -35,6 +35,6 @@ class Wunderlist::Task
 
   def save(api = nil)
     @api ||= api
-    @api.save_task self
+    @api.save self
   end
 end

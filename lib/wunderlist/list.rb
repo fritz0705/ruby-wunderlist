@@ -25,9 +25,10 @@ module Wunderlist
   class List
     attr_accessor :id, :name, :inbox, :shared, :api
 
-    def initialize(name = nil, inbox = nil)
+    def initialize(name = nil, inbox = nil, api = nil)
       @name = name
       @inbox = inbox
+      @api = api
     end
     
     def tasks
@@ -37,7 +38,7 @@ module Wunderlist
 
     def save(api = nil)
       @api ||= api
-      @api.save_list(self)
+      @api.save(self)
     end
 
     def flush
