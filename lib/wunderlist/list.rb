@@ -36,6 +36,10 @@ module Wunderlist
       @tasks
     end
 
+    def create_task(name, date = nil)
+      Wunderlist::Task.new(name, date, self, @api).save
+    end
+
     def save(api = nil)
       @api ||= api
       @api.save(self)

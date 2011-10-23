@@ -63,6 +63,10 @@ module Wunderlist
       @lists
     end
 
+    def inbox
+      lists.to_a.first[1]
+    end
+
     def tasks(list)
       list_obj = list.is_a?(Wunderlist::List) ? list : lists[list]
       list = list.id if list.is_a? Wunderlist::List
@@ -123,6 +127,26 @@ module Wunderlist
       end
 
       false
+    end
+
+    def save_task(obj)
+      return update_task(obj) if obj.id
+
+      json_data = {"list_id" => obj.list.id, "name" => obj.name, "date" => 0}
+      json_data["date"] = obj.date.to_time.to_i if obj.date
+
+      request = prepare_request(Net::HTTP::Post.new "#{@path}/ajax/tasks/insert")
+      request.set_form_data "task" => json_data.to_json
+      response = @http.request request
+      response_json = JSON.parse(response.body)
+
+      if response_json["status"] == "success"
+        obj.id = response_json["id"]
+        obj.list.tasks << obj
+        return obj
+      end
+
+      nil
     end
 
     def save_list(obj)
