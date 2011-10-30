@@ -22,7 +22,39 @@
 # SOFTWARE.
 
 module Wunderlist
-  class List
+  class FilterableList
+    attr_accessor :tasks
+
+    def initialize(tasks = [])
+      @tasks = tasks
+    end
+
+    def today
+      FilterableList.new(tasks.clone.keep_if do |t|
+        t.date == Date.today && !t.done
+      end)
+    end
+
+    def priority
+      FilterableList.new(tasks.clone.keep_if do |t|
+        t.important && !t.done
+      end)
+    end
+
+    def done
+      FilterableList.new(tasks.clone.keep_if do |t|
+        t.done == true
+      end)
+    end
+
+    def overdue
+      FilterableList.new(tasks.clone.keep_if do |t|
+        t.date && t.date < Date.today && !t.done
+      end)
+    end
+  end
+
+  class List < FilterableList
     attr_accessor :id, :name, :inbox, :shared, :api
 
     def initialize(name = nil, inbox = nil, api = nil)
@@ -38,12 +70,6 @@ module Wunderlist
 
     def create_task(name, date = nil)
       Wunderlist::Task.new(name, date, self, @api).save
-    end
-
-    def today
-      tasks.clone.keep_if do |t|
-        t.date == Date.today
-      end
     end
 
     def save(api = nil)
