@@ -54,6 +54,12 @@ module Wunderlist
       @logged_in
     end
 
+    def login_by_session(sessid)
+      return if @logged_in
+      @logged_in = true
+      @session = sessid
+    end
+
     def flush
       @lists = nil
     end
