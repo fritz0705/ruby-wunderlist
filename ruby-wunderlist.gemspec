@@ -3,7 +3,7 @@ $:.unshift lib unless $:.include?(lib)
 
 Gem::Specification.new do |s|
   s.name          = "ruby-wunderlist"
-  s.version       = "0.2.pre"
+  s.version       = "0.2.pre2"
   s.summary       = "Wunderlist Bindings for Ruby"
   s.authors       = ["Fritz Grimpen"]
   s.email         = "fritz+wunderlist@grimpen.net"
