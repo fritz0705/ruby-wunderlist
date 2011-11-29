@@ -41,9 +41,21 @@ module Wunderlist
       end)
     end
 
+    def not_priority
+      FilterableList.new(tasks.clone.keep_if do |t|
+        !t.important && !t.done
+      end)
+    end
+
     def done
       FilterableList.new(tasks.clone.keep_if do |t|
         t.done == true
+      end)
+    end
+
+    def not_done
+      FilterableList.new(tasks.clone.keep_if do |t|
+        t.done != true
       end)
     end
 
@@ -51,6 +63,23 @@ module Wunderlist
       FilterableList.new(tasks.clone.keep_if do |t|
         t.date && t.date < Date.today && !t.done
       end)
+    end
+
+    def not_overdue
+      FilterableList.new(tasks.clone.keep_if do |t|
+        (!t.date || t.date < Date.today) && !t.done
+      end)
+    end
+    
+    def to_s
+      lines = []
+      lines << "[List] [Filtered] #{tasks.count != 1 ? "#{tasks.count} tasks" : "#{tasks.count} task"}"
+
+      tasks.each do |task|
+        lines << "  #{task}"
+      end
+      
+      lines.join "\n"
     end
   end
 
@@ -84,6 +113,17 @@ module Wunderlist
 
     def flush
       @tasks = nil
+    end
+
+    def to_s
+      lines = []
+      lines << "[List]#{inbox ? " [INBOX]" : ""} #{name} - #{tasks.count != 1 ? (tasks.count.to_s + " tasks") : tasks.count.to_s + " task"}"
+
+      tasks.each do |task|
+        lines << "  #{task}"
+      end
+
+      lines.join "\n"
     end
   end
 end

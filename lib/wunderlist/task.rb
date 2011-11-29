@@ -37,4 +37,8 @@ class Wunderlist::Task
     @api ||= api
     @api.save self
   end
+
+  def to_s
+    "[Task]#{done ? " [Done]" : ""}#{important ? " [PRIORITY]" : ""}#{date ? " #{date.to_s}" : ""} - #{name}"
+  end
 end
