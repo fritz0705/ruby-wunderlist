@@ -70,7 +70,7 @@ module Wunderlist
     end
 
     def inbox
-      lists.to_a.first[1]
+      lists.values.detect { |list| list.inbox }
     end
 
     def tasks(list)
