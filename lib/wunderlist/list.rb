@@ -29,42 +29,56 @@ module Wunderlist
       @tasks = tasks
     end
 
+    ##
+    # Get all tasks whose date is today
     def today
       FilterableList.new(tasks.clone.keep_if do |t|
         t.date == Date.today && !t.done
       end)
     end
 
+    ##
+    # Get all tasks which are important
     def priority
       FilterableList.new(tasks.clone.keep_if do |t|
         t.important && !t.done
       end)
     end
 
+    ##
+    # Get all tasks which are not important
     def not_priority
       FilterableList.new(tasks.clone.keep_if do |t|
         !t.important && !t.done
       end)
     end
 
+    ##
+    # Get all done tasks
     def done
       FilterableList.new(tasks.clone.keep_if do |t|
         t.done == true
       end)
     end
 
+    ##
+    # Get all non-done tasks
     def not_done
       FilterableList.new(tasks.clone.keep_if do |t|
         t.done != true
       end)
     end
 
+    ##
+    # Get all overdue tasks
     def overdue
       FilterableList.new(tasks.clone.keep_if do |t|
         t.date && t.date < Date.today && !t.done
       end)
     end
 
+    ##
+    # Get all non-overdue tasks
     def not_overdue
       FilterableList.new(tasks.clone.keep_if do |t|
         (!t.date || t.date < Date.today) && !t.done
@@ -92,25 +106,35 @@ module Wunderlist
       @api = api
     end
     
+    ##
+    # Get all tasks
     def tasks
       @tasks = @api.tasks self if @tasks == nil
       @tasks
     end
 
+    ##
+    # Create task with specified name and date
     def create_task(name, date = nil)
       Wunderlist::Task.new(name, date, self, @api).save
     end
 
+    ##
+    # Save list with api
     def save(api = nil)
       @api ||= api
       @api.save(self)
     end
 
+    ##
+    # Destroy list with api
     def destroy(api = nil)
       @api ||= api
       @api.destroy(self)
     end
 
+    ##
+    # Remove tasks cache
     def flush
       @tasks = nil
     end

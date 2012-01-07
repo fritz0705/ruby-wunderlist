@@ -32,7 +32,21 @@ require "wunderlist/task"
 
 module Wunderlist
   class API
-    attr_reader :domain, :path, :email, :session
+    ##
+    # Domain of the Wunderlist API
+    attr_reader :domain
+    
+    ##
+    # Path of the Wunderlist API
+    attr_reader :path
+    
+    ##
+    # Your email address from login
+    attr_reader :email
+    
+    ##
+    # Wunderlist Session ID
+    attr_reader :session
 
     def initialize(domain = "www.wunderlist.com", path = "/")
       @domain = domain
@@ -41,6 +55,8 @@ module Wunderlist
       @logged_in = false
     end
 
+    ##
+    # Request new session and connects it with your login credentials
     def login(email, password)
       get_session if @session == nil
       return true if @logged_in
@@ -54,25 +70,35 @@ module Wunderlist
       @logged_in
     end
 
+    ##
+    # Login with a session ID without login credentials
     def login_by_session(sessid)
       return if @logged_in
       @logged_in = true
       @session = sessid
     end
 
+    ##
+    # Delete internal list caching
     def flush
       @lists = nil
     end
 
+    ##
+    # Return all lists
     def lists
       @lists = load_lists if @lists == nil
       @lists
     end
 
+    ##
+    # Get INBOX list
     def inbox
       lists.values.detect { |list| list.inbox }
     end
 
+    ##
+    # Load and parse tasks from Wunderlist API
     def tasks(list)
       list_obj = list.is_a?(Wunderlist::List) ? list : lists[list]
       list = list.id if list.is_a? Wunderlist::List
@@ -99,10 +125,14 @@ module Wunderlist
       result
     end
 
+    ##
+    # Create new empty List
     def create_list(name)
       Wunderlist::List.new(name, false, self).save
     end
 
+    ##
+    # Save List or Task
     def save(obj)
       if obj.is_a? Wunderlist::List
         return save_list obj
@@ -111,6 +141,8 @@ module Wunderlist
       end
     end
 
+    ##
+    # Destroy List or Task
     def destroy(obj)
       if obj.is_a? Wunderlist::List
         return destroy_list obj
