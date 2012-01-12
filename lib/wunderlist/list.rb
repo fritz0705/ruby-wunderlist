@@ -22,7 +22,12 @@
 # SOFTWARE.
 
 module Wunderlist
+  ##
+  # A FilterableList represents an array of Tasks and provides methods to
+  # filter the list by the tasks
   class FilterableList
+    ##
+    # Array of tasks
     attr_accessor :tasks
 
     def initialize(tasks = [])
@@ -97,8 +102,28 @@ module Wunderlist
     end
   end
 
+  ##
+  # A List is a FilterableList which can be synchronized with an API object
   class List < FilterableList
-    attr_accessor :id, :name, :inbox, :shared, :api
+    ##
+    # ID of the list on the Wunderlist server
+    attr_accessor :id
+
+    ##
+    # Name of the list
+    attr_accessor :name
+
+    ##
+    # Value which determines whether this list is a INBOX or or not
+    attr_accessor :inbox
+
+    ##
+    # true, if list is shared, otherwise false
+    attr_accessor :shared
+
+    ##
+    # Reference to the associated API object. Necessary for many methods.
+    attr_accessor :api
 
     def initialize(name = nil, inbox = nil, api = nil)
       @name = name

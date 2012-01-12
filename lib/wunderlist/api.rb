@@ -31,6 +31,8 @@ require "wunderlist/list"
 require "wunderlist/task"
 
 module Wunderlist
+  ##
+  # The API class provides access to the Wunderlist API over HTTP.
   class API
     ##
     # Domain of the Wunderlist API
