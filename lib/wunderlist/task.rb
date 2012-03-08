@@ -24,7 +24,7 @@
 require "wunderlist/list"
 
 class Wunderlist::Task
-  attr_accessor :id, :name, :important, :done, :date, :api, :list
+  attr_accessor :id, :name, :important, :done, :date, :note, :api, :list
 
   def initialize(name = nil, date = nil, list = nil, api = nil)
     @name = name
