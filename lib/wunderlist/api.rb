@@ -118,6 +118,7 @@ module Wunderlist
         html_timestamp = html_task.css("span.timestamp")
         task.date = Time.at(html_timestamp.first.attributes["rel"].
         value.to_i).to_date unless html_timestamp.empty?
+        task.note = html_task.css('span.note').first.content
         task.api = self
         task.list = list_obj
 
