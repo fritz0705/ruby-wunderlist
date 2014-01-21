@@ -1,7 +1,17 @@
 ruby-wunderlist
 ===============
 
-ruby-wunderlist is an inofficial Ruby binding for the undocumented Wunderlist API.
+Deprecated
+----------
+
+**Important**: Wunderlist's undocumented API has changed significantly since
+the most recent release of this gem. The gem no longer authenticates (see #1)
+and is unsupported. Pull requests are welcome.
+
+Summary
+-------
+
+ruby-wunderlist is an unofficial Ruby binding for the undocumented Wunderlist API.
 
 Features:
 
